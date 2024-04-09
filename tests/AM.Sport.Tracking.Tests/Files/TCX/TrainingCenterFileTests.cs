@@ -19,5 +19,7 @@ public class TrainingCenterFileTests
         var cadence = TrackCalculator.CalculateAverageCadence(track);
         var minAltitude = TrackCalculator.CalculateMinAltitude(track);
         var maxAltitude = TrackCalculator.CalculateMaxAltitude(track);
+
+        var distance = TrackCalculator.CalculateDistanceBetweenCoordinates(track[10].Position, track[11].Position);
     }
 }

@@ -70,4 +70,32 @@ public static class TrackCalculator
 
         return points.Min(x => x.Altitude);
     }
+
+    private static double ConvertDegreesToRadians(double degrees)
+    {
+        return degrees * Math.PI / 180D;
+    }
+
+    /// <summary>
+    /// Calculates distance between two GPS points.
+    /// </summary>
+    /// <param name="startPoint">Start point.</param>
+    /// <param name="endPoint">End point.</param>
+    /// <returns>Distance between two GPS points in metres.</returns>
+    public static double CalculateDistanceBetweenCoordinates(Position startPoint, Position endPoint)
+    {
+        var earthRadiusKm = 6378.1370D;
+
+        var distanceLatitude = ConvertDegreesToRadians(endPoint.Latitude - startPoint.Latitude);
+        var distanceLongitude = ConvertDegreesToRadians(endPoint.Longitude - startPoint.Longitude);
+
+        var startLatitudeRadians = ConvertDegreesToRadians(startPoint.Latitude);
+        var endLatitudeRadians = ConvertDegreesToRadians(endPoint.Latitude);
+
+        var a = Math.Sin(distanceLatitude / 2) * Math.Sin(distanceLatitude / 2) +
+                Math.Sin(distanceLongitude / 2) * Math.Sin(distanceLongitude / 2) * Math.Cos(startLatitudeRadians) * Math.Cos(endLatitudeRadians);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        
+        return earthRadiusKm * c * 1000D;
+    }
 }
