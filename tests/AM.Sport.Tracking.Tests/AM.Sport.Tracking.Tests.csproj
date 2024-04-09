@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latestmajor</LangVersion>
+		<Description>Core logic for saving and transferring information about sports activities (unit tests).</Description>
+		<Authors>Artsiom Marzavin</Authors>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Data\21_Poznan_Marathon.gpx" />
+	  <None Remove="Data\21_Poznan_Marathon.tcx" />
+	  <None Remove="Data\21_Poznan_Marathon.xml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Data\21_Poznan_Marathon.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\21_Poznan_Marathon.gpx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\21_Poznan_Marathon.tcx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+	  <PackageReference Include="NUnit" Version="4.1.0" />
+	  <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\AM.Sport.Tracking\AM.Sport.Tracking.csproj" />
+	</ItemGroup>
+
+</Project>
