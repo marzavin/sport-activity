@@ -41,18 +41,18 @@ public partial class TrainingCenterFile : IActivityContainer
             var xmlString = await GetXmlStringAsync();
             var file = XDocument.Parse(xmlString);
 
-            var activityNodes = file.Root.Elements().FirstOrDefault(x => FilterByLocalName(x, ActivitiesNode))
-                ?.Elements().Where(x => FilterByLocalName(x, ActivityNode)).ToList();
+            var activityNodes = file.Root.Elements().FirstOrDefaultByLocalName(ActivitiesNode)
+                ?.Elements().WhereLocalName(ActivityNode).ToList();
 
             foreach (var activityNode in activityNodes)
             {
                 activities.Add(new Activity
                 {
-                    Id = activityNode.Elements().FirstOrDefault(x => FilterByLocalName(x, IdNode))?.Value,
-                    Type = activityNode.Attributes().FirstOrDefault(x => FilterByLocalName(x, SportAttribute))?.Value,
-                    Track = activityNode.Elements().Where(x => FilterByLocalName(x, LapNode))
-                        ?.Select(x => x.Elements().Where(x => FilterByLocalName(x, TrackNode)))
-                        ?.SelectMany(x => x.Elements().Where(x => FilterByLocalName(x, TrackPointNode)))
+                    Id = activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value,
+                    Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value,
+                    Track = activityNode.Elements().WhereLocalName(LapNode)
+                        ?.Select(x => x.Elements().WhereLocalName(TrackNode))
+                        ?.SelectMany(x => x.Elements().WhereLocalName(TrackPointNode))
                         ?.Select(GetTrackPoint).OrderBy(x => x.TimeStamp).ToList()
                 });
             }
@@ -72,15 +72,15 @@ public partial class TrainingCenterFile : IActivityContainer
             return null;
         }
 
-        var cadenceNode = trackPointNode.Elements().FirstOrDefault(x => FilterByLocalName(x, CadenceNode));
-        var altitudeNode = trackPointNode.Elements().FirstOrDefault(x => FilterByLocalName(x, AltitudeMetersNode));
-        var heartRateValueNode = trackPointNode.Elements().FirstOrDefault(x => FilterByLocalName(x, HeartRateNode))
-            ?.Elements().FirstOrDefault(x => FilterByLocalName(x, ValueNode));
+        var cadenceNode = trackPointNode.Elements().FirstOrDefaultByLocalName(CadenceNode);
+        var altitudeNode = trackPointNode.Elements().FirstOrDefaultByLocalName(AltitudeMetersNode);
+        var heartRateValueNode = trackPointNode.Elements().FirstOrDefaultByLocalName(HeartRateNode)
+            ?.Elements().FirstOrDefaultByLocalName(ValueNode);
 
         return new TrackPoint
         {
-            TimeStamp = DateTime.Parse(trackPointNode.Elements().First(x => FilterByLocalName(x, TimeNode)).Value).ToUniversalTime(),
-            Position = GetPosition(trackPointNode.Elements().FirstOrDefault(x => FilterByLocalName(x, PositionNode))),
+            TimeStamp = DateTime.Parse(trackPointNode.Elements().FirstByLocalName(TimeNode).Value).ToUniversalTime(),
+            Position = GetPosition(trackPointNode.Elements().FirstOrDefaultByLocalName(PositionNode)),
             Cadence = cadenceNode == null ? null : int.Parse(cadenceNode.Value),
             Altitude = altitudeNode == null ? null : double.Parse(altitudeNode.Value),
             HeartRate = heartRateValueNode == null ? null :  int.Parse(heartRateValueNode.Value)
@@ -97,19 +97,9 @@ public partial class TrainingCenterFile : IActivityContainer
         // TODO: Make it culture invariant
         return new Position
         {
-            Latitude = double.Parse(positionNode.Elements().First(x => FilterByLocalName(x, LatitudeDegreesNode)).Value),
-            Longitude = double.Parse(positionNode.Elements().First(x => FilterByLocalName(x, LongitudeDegreesNode)).Value)
+            Latitude = double.Parse(positionNode.Elements().FirstByLocalName(LatitudeDegreesNode).Value),
+            Longitude = double.Parse(positionNode.Elements().FirstByLocalName(LongitudeDegreesNode).Value)
         };
-    }
-
-    private bool FilterByLocalName(XElement element, string nodeName)
-    {
-        return element.Name.LocalName == nodeName;
-    }
-
-    private bool FilterByLocalName(XAttribute attribute, string nodeName)
-    {
-        return attribute.Name.LocalName == nodeName;
     }
 
     private async Task<string> GetXmlStringAsync()
