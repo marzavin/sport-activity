@@ -5,8 +5,24 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<LangVersion>latestmajor</LangVersion>
-		<Description>Core logic for saving and transferring information about sports activities.</Description>
+		<Description>Library for saving and transferring information about sports activities.</Description>
 		<Authors>Artsiom Marzavin</Authors>
+		<Title></Title>
+		<RepositoryUrl>https://github.com/marzavin/sport-activity</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>
