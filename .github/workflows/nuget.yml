@@ -32,11 +32,11 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
     
     - name: "Get version"
-      id: version-from-tag
+      id: get_version
       uses: jannemattila/get-version-from-tag@v3
 
     - name: "Pack projects"
-      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols -p:PackageVersion=${{ steps.version-from-tag.outputs.version }} --output ${{ env.PACKAGE_OUTPUT }}
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols -p:PackageVersion=${{ steps.get_version.outputs.version }} --output ${{ env.PACKAGE_OUTPUT }}
 
     - name: "Push packages"
       run: dotnet nuget push ${{ env.PACKAGE_OUTPUT }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_URL }}
