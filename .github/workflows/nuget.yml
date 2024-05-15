@@ -30,4 +30,4 @@ jobs:
     - name: "Pack projects"
       run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols -p:PackageVersion=${{ env.RELEASE_VERSION }} --output ${{ env.PACKAGE_OUTPUT }}
     - name: "Push packages"
-      run: dotnet nuget push {{ env.PACKAGE_OUTPUT }}\*.nupkg;-:{{ env.PACKAGE_OUTPUT }}\*.symbols.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_URL }}
+      run: dotnet nuget push {{ env.PACKAGE_OUTPUT }}/*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_URL }} --no-symbols
