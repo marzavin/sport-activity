@@ -13,7 +13,8 @@ public class TrainingCenterFileTests
         var file = new TrainingCenterFile(fullPath);
         var activities = await file.LoadAsync();
 
-        var track = activities.First().Track;
+        var activity = activities.First();
+        var track = activity.Track;
 
         var heartRate = TrackCalculator.CalculateAverageHeartRate(track);
         var cadence = TrackCalculator.CalculateAverageCadence(track);
@@ -23,5 +24,8 @@ public class TrainingCenterFileTests
         var distance = TrackCalculator.CalculateDistanceBetweenCoordinates(track[10].Position, track[11].Position);
 
         var trackDistance = TrackCalculator.CalculateTrackDistance(track);
+
+        Assert.That(activity.Segments.Count, Is.EqualTo(9));
+        Assert.That(activity.Author, Is.Not.Empty);
     }
 }

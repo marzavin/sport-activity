@@ -29,4 +29,9 @@ public class TrackPoint
     /// Gets or sets heart rate at the moment of time. 
     /// </summary>
     public int? HeartRate { get; set; }
+
+    /// <summary>
+    /// Gets or sets segment(lap) number from the source file. 
+    /// </summary>
+    public int? SegmentNumber { get; set; }
 }

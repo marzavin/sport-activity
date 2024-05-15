@@ -71,11 +71,6 @@ public static class TrackCalculator
         return points.Min(x => x.Altitude);
     }
 
-    private static double ConvertDegreesToRadians(double degrees)
-    {
-        return degrees * Math.PI / 180D;
-    }
-
     /// <summary>
     /// Calculates distance between two GPS points.
     /// </summary>
@@ -127,5 +122,10 @@ public static class TrackCalculator
         }
 
         return distance;
+    }
+
+    private static double ConvertDegreesToRadians(double degrees)
+    {
+        return degrees * Math.PI / 180D;
     }
 }

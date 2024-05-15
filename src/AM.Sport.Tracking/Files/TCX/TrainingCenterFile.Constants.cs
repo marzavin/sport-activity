@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace AM.Sport.Tracking.Files.TCX;
+﻿namespace AM.Sport.Tracking.Files.TCX;
 
 public partial class TrainingCenterFile
 {
@@ -19,6 +17,11 @@ public partial class TrainingCenterFile
     private const string AltitudeMetersNode = "AltitudeMeters";
     private const string HeartRateNode = "HeartRateBpm";
     private const string ValueNode = "Value";
+    private const string AuthorNode = "Author";
+    private const string NameNode = "Name";
+    private const string TotalTimeSecondsNode = "TotalTimeSeconds";
+    private const string DistanceMetersNode = "DistanceMeters";
+    private const string MaximumSpeedNode = "MaximumSpeed";
 
     private const string SportAttribute = "Sport";
 }

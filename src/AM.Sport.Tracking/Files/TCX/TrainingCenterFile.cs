@@ -44,17 +44,53 @@ public partial class TrainingCenterFile : IActivityContainer
             var activityNodes = file.Root.Elements().FirstOrDefaultByLocalName(ActivitiesNode)
                 ?.Elements().WhereLocalName(ActivityNode).ToList();
 
+            var author = file.Root
+                .Elements().FirstOrDefaultByLocalName(AuthorNode)?
+                .Elements().FirstOrDefaultByLocalName(NameNode).Value;
+
             foreach (var activityNode in activityNodes)
             {
-                activities.Add(new Activity
+                var activity = new Activity
                 {
                     Id = activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value,
-                    Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value,
-                    Track = activityNode.Elements().WhereLocalName(LapNode)
-                        ?.Select(x => x.Elements().WhereLocalName(TrackNode))
-                        ?.SelectMany(x => x.Elements().WhereLocalName(TrackPointNode))
-                        ?.Select(GetTrackPoint).OrderBy(x => x.TimeStamp).ToList()
-                });
+                    Author = author,
+                    Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value
+                };
+
+                var laps = activityNode.Elements().WhereLocalName(LapNode).ToList();
+                var track = new List<TrackPoint>();
+
+                for (var i = 0; i < laps.Count; i++)
+                {
+                    var maxSpeedValue = laps[i].Elements()?.FirstOrDefaultByLocalName(MaximumSpeedNode)?.Value;
+                    var distanceValue = laps[i].Elements()?.FirstOrDefaultByLocalName(DistanceMetersNode)?.Value;
+                    var totalTimeValue = laps[i].Elements()?.FirstOrDefaultByLocalName(TotalTimeSecondsNode)?.Value;
+
+                    var segment = new Segment
+                    {
+                        Number = i + 1,
+                        MaxSpeed = string.IsNullOrWhiteSpace(maxSpeedValue) ? null : double.Parse(maxSpeedValue),
+                        Distance = string.IsNullOrWhiteSpace(distanceValue) ? null : double.Parse(distanceValue),
+                        TotalTime = string.IsNullOrWhiteSpace(totalTimeValue) ? null : TimeSpan.FromSeconds(double.Parse(totalTimeValue))
+                    };
+
+                    activity.Segments ??= [];
+                    activity.Segments.Add(segment);
+
+                    var newPoints = laps[i].Elements()
+                        ?.FirstOrDefaultByLocalName(TrackNode)
+                        ?.Elements().WhereLocalName(TrackPointNode)
+                        ?.Select(x => GetTrackPoint(x, segment.Number)).OrderBy(x => x.TimeStamp).ToList();
+
+                    if (newPoints != null && newPoints.Count > 0)
+                    {
+                        track.AddRange(newPoints);   
+                    }                    
+                }
+
+                activity.Track = track.Count > 0 ? track : null;
+                        
+                activities.Add(activity);
             }
         }
         catch (Exception ex)
@@ -65,7 +101,7 @@ public partial class TrainingCenterFile : IActivityContainer
         return activities;
     }
 
-    private TrackPoint GetTrackPoint(XElement trackPointNode)
+    private TrackPoint GetTrackPoint(XElement trackPointNode, int? segmentNumber = null)
     {
         if (trackPointNode == null)
         {
@@ -83,7 +119,8 @@ public partial class TrainingCenterFile : IActivityContainer
             Position = GetPosition(trackPointNode.Elements().FirstOrDefaultByLocalName(PositionNode)),
             Cadence = cadenceNode == null ? null : int.Parse(cadenceNode.Value),
             Altitude = altitudeNode == null ? null : double.Parse(altitudeNode.Value),
-            HeartRate = heartRateValueNode == null ? null :  int.Parse(heartRateValueNode.Value)
+            HeartRate = heartRateValueNode == null ? null :  int.Parse(heartRateValueNode.Value),
+            SegmentNumber = segmentNumber
         };
     }
 
