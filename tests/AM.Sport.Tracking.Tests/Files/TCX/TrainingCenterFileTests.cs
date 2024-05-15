@@ -21,5 +21,7 @@ public class TrainingCenterFileTests
         var maxAltitude = TrackCalculator.CalculateMaxAltitude(track);
 
         var distance = TrackCalculator.CalculateDistanceBetweenCoordinates(track[10].Position, track[11].Position);
+
+        var trackDistance = TrackCalculator.CalculateTrackDistance(track);
     }
 }
