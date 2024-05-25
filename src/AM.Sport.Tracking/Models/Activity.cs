@@ -8,7 +8,7 @@ public class Activity
     /// <summary>
     /// Gets or sets activity id;
     /// </summary>
-    public string Id { get; set; }
+    public string ActivityId { get; set; }
 
     /// <summary>
     /// Gets or sets activity type.
