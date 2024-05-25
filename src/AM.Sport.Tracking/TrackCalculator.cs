@@ -71,11 +71,6 @@ public static class TrackCalculator
         return points.Min(x => x.Altitude);
     }
 
-    private static double ConvertDegreesToRadians(double degrees)
-    {
-        return degrees * Math.PI / 180D;
-    }
-
     /// <summary>
     /// Calculates distance between two GPS points.
     /// </summary>
@@ -97,5 +92,40 @@ public static class TrackCalculator
         var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
         
         return earthRadiusKm * c * 1000D;
+    }
+
+    /// <summary>
+    /// Calculates full distance of the track.
+    /// </summary>
+    /// <param name="track">List of <see cref="TrackPoint"/>.</param>
+    /// <returns>Full distance of the track.</returns>
+    /// <exception cref="ArgumentNullException">Track parameter is 'null'.</exception>
+    public static double CalculateTrackDistance(List<TrackPoint> track)
+    {
+        if (track == null)
+        {
+            throw new ArgumentNullException(nameof(track));
+        }
+
+        var distance = 0D;
+
+        var points = track.Where(x => x.Position is not null).OrderBy(x => x.TimeStamp).ToList();
+
+        if (points.Count < 2)
+        {
+            return distance;
+        }      
+
+        for (var i = 1; i < points.Count; i++)
+        {
+            distance += CalculateDistanceBetweenCoordinates(points[i - 1].Position, points[i].Position);
+        }
+
+        return distance;
+    }
+
+    private static double ConvertDegreesToRadians(double degrees)
+    {
+        return degrees * Math.PI / 180D;
     }
 }
