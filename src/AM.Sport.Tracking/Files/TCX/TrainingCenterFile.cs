@@ -52,7 +52,7 @@ public partial class TrainingCenterFile : IActivityContainer
             {
                 var activity = new Activity
                 {
-                    ActivityId = activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value,
+                    TimeStamp = DateTime.Parse(activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value),
                     Author = author,
                     Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value
                 };

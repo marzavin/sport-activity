@@ -6,13 +6,22 @@
 public class Segment
 {
     /// <summary>
-    /// Gets or sets number of segment.
+    /// Gets or sets number of the segment.
     /// </summary>
     public int Number { get; set; }
 
+    /// <summary>
+    /// Gets or sets total time of the segment.
+    /// </summary>
     public TimeSpan? TotalTime { get; set; }
-	
+
+    /// <summary>
+    /// Gets or sets distance of the segment.
+    /// </summary>
     public double? Distance { get; set; }
 
+    /// <summary>
+    /// Gets or sets maximum speed shown on the segment.
+    /// </summary>
     public double? MaxSpeed { get; set; }
 }
