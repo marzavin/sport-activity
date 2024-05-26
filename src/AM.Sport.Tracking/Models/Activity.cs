@@ -8,7 +8,7 @@ public class Activity
     /// <summary>
     /// Gets or sets source identifier.
     /// </summary>
-    public Guid SourceId { get; set; }
+    public string SourceId { get; set; }
 
     /// <summary>
     /// Gets or sets timestamp of activity.

@@ -13,6 +13,11 @@ public abstract class XmlActivityContainerBase : IActivityContainer
     protected string Path { get; private set; }
 
     /// <summary>
+    /// Gets or sets source file identifier.
+    /// </summary>
+    protected string SourceId { get; private set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="XmlActivityContainerBase"/> class.
     /// </summary>
     /// <param name="path"></param>
@@ -25,6 +30,7 @@ public abstract class XmlActivityContainerBase : IActivityContainer
         }
 
         Path = path;
+        SourceId = Guid.NewGuid().ToString();
     }
 
     /// <summary>

@@ -23,8 +23,6 @@ public partial class TrainingCenterFile : XmlActivityContainerBase, IActivityCon
     /// <returns><see cref="Activity"/> for more information.</returns>
     public override async Task<List<Activity>> LoadAsync()
     {
-        var sourceId = Guid.NewGuid();
-
         var activities = new List<Activity>();
 
         var xmlString = await GetXmlStringAsync();
@@ -41,7 +39,7 @@ public partial class TrainingCenterFile : XmlActivityContainerBase, IActivityCon
         {
             var activity = new Activity
             {
-                SourceId = sourceId,
+                SourceId = SourceId,
                 TimeStamp = ParseUniversalTime(activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value),
                 Author = author,
                 Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value

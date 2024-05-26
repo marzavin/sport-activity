@@ -23,8 +23,6 @@ public partial class GlobalPositioningFile : XmlActivityContainerBase, IActivity
     /// <returns><see cref="Activity"/> for more information.</returns>
     public override async Task<List<Activity>> LoadAsync()
     {
-        var sourceId = Guid.NewGuid();
-
         var xmlString = await GetXmlStringAsync();
         var file = XDocument.Parse(xmlString);
 
@@ -32,7 +30,7 @@ public partial class GlobalPositioningFile : XmlActivityContainerBase, IActivity
 
         var activity = new Activity
         {
-            SourceId = sourceId,
+            SourceId = SourceId,
         };
 
         return [activity];
