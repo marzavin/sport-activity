@@ -6,101 +6,83 @@ namespace AM.Sport.Tracking.Files.TCX;
 /// <summary>
 /// Training Center XML file.
 /// </summary>
-public partial class TrainingCenterFile : IActivityContainer
+public partial class TrainingCenterFile : XmlActivityContainerBase, IActivityContainer
 {
-    /// <summary>
-    /// Gets or sets path to .tcx file.
-    /// </summary>
-    protected string Path { get; private set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TrainingCenterFile"/> class.
     /// </summary>
     /// <param name="path"></param>
     /// <exception cref="ArgumentNullException">Throws <see cref="ArgumentNullException"/> in case if <paramref name="path"/> is null or empty string.</exception>
     public TrainingCenterFile(string path)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        Path = path;
-    }
+        : base(path)
+    { }
 
     /// <summary>
     /// Loads data from .tcx file as <see cref="Activity"/> object.
     /// </summary>
     /// <returns><see cref="Activity"/> for more information.</returns>
-    public async Task<List<Activity>> LoadAsync()
+    public override async Task<List<Activity>> LoadAsync()
     {
         var sourceId = Guid.NewGuid();
 
         var activities = new List<Activity>();
 
-        try
+        var xmlString = await GetXmlStringAsync();
+        var file = XDocument.Parse(xmlString);
+
+        var activityNodes = file.Root.Elements().FirstOrDefaultByLocalName(ActivitiesNode)
+            ?.Elements().WhereLocalName(ActivityNode).ToList();
+
+        var author = file.Root
+            .Elements().FirstOrDefaultByLocalName(AuthorNode)?
+            .Elements().FirstOrDefaultByLocalName(NameNode).Value;
+
+        foreach (var activityNode in activityNodes)
         {
-            var xmlString = await GetXmlStringAsync();
-            var file = XDocument.Parse(xmlString);
-
-            var activityNodes = file.Root.Elements().FirstOrDefaultByLocalName(ActivitiesNode)
-                ?.Elements().WhereLocalName(ActivityNode).ToList();
-
-            var author = file.Root
-                .Elements().FirstOrDefaultByLocalName(AuthorNode)?
-                .Elements().FirstOrDefaultByLocalName(NameNode).Value;
-
-            foreach (var activityNode in activityNodes)
+            var activity = new Activity
             {
-                var activity = new Activity
+                SourceId = sourceId,
+                TimeStamp = ParseUniversalTime(activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value),
+                Author = author,
+                Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value
+            };
+
+            var laps = activityNode.Elements().WhereLocalName(LapNode).ToList();
+            var track = new List<TrackPoint>();
+
+            for (var i = 0; i < laps.Count; i++)
+            {
+                var startTime = laps[i].Attributes().FirstByLocalName(StartTimeAttribute)?.Value;
+                var distanceValue = laps[i].Elements().FirstByLocalName(DistanceMetersNode).Value;
+                var totalTimeValue = laps[i].Elements().FirstByLocalName(TotalTimeSecondsNode).Value;
+                var maxSpeedValue = laps[i].Elements().FirstOrDefaultByLocalName(MaximumSpeedNode)?.Value;
+
+                var segment = new Segment
                 {
-                    SourceId = sourceId,
-                    TimeStamp = ParseUniversalTime(activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value),
-                    Author = author,
-                    Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value
+                    Number = i + 1,
+                    StartTime = ParseUniversalTime(startTime),
+                    Distance = double.Parse(distanceValue),
+                    TotalTime = TimeSpan.FromSeconds(double.Parse(totalTimeValue)),
+                    MaxSpeed = string.IsNullOrWhiteSpace(maxSpeedValue) ? null : double.Parse(maxSpeedValue)
                 };
 
-                var laps = activityNode.Elements().WhereLocalName(LapNode).ToList();
-                var track = new List<TrackPoint>();
+                activity.Segments ??= [];
+                activity.Segments.Add(segment);
 
-                for (var i = 0; i < laps.Count; i++)
+                var newPoints = laps[i].Elements()
+                    ?.FirstOrDefaultByLocalName(TrackNode)
+                    ?.Elements().WhereLocalName(TrackPointNode)
+                    ?.Select(x => GetTrackPoint(x, segment.Number)).OrderBy(x => x.TimeStamp).ToList();
+
+                if (newPoints != null && newPoints.Count > 0)
                 {
-                    var startTime = laps[i].Attributes().FirstByLocalName(StartTimeAttribute)?.Value;
-                    var distanceValue = laps[i].Elements().FirstByLocalName(DistanceMetersNode).Value;
-                    var totalTimeValue = laps[i].Elements().FirstByLocalName(TotalTimeSecondsNode).Value;
-                    var maxSpeedValue = laps[i].Elements().FirstOrDefaultByLocalName(MaximumSpeedNode)?.Value;
-
-                    var segment = new Segment
-                    {
-                        Number = i + 1,
-                        StartTime = ParseUniversalTime(startTime),
-                        Distance = double.Parse(distanceValue),
-                        TotalTime = TimeSpan.FromSeconds(double.Parse(totalTimeValue)),
-                        MaxSpeed = string.IsNullOrWhiteSpace(maxSpeedValue) ? null : double.Parse(maxSpeedValue)
-                    };
-
-                    activity.Segments ??= [];
-                    activity.Segments.Add(segment);
-
-                    var newPoints = laps[i].Elements()
-                        ?.FirstOrDefaultByLocalName(TrackNode)
-                        ?.Elements().WhereLocalName(TrackPointNode)
-                        ?.Select(x => GetTrackPoint(x, segment.Number)).OrderBy(x => x.TimeStamp).ToList();
-
-                    if (newPoints != null && newPoints.Count > 0)
-                    {
-                        track.AddRange(newPoints);   
-                    }                    
+                    track.AddRange(newPoints);
                 }
-
-                activity.Track = track.Count > 0 ? track : null;
-                        
-                activities.Add(activity);
             }
-        }
-        catch (Exception ex)
-        {
-            var m = ex.Message;
+
+            activity.Track = track.Count > 0 ? track : null;
+
+            activities.Add(activity);
         }
 
         return activities;
@@ -124,7 +106,7 @@ public partial class TrainingCenterFile : IActivityContainer
             Position = GetPosition(trackPointNode.Elements().FirstOrDefaultByLocalName(PositionNode)),
             Cadence = cadenceNode == null ? null : int.Parse(cadenceNode.Value),
             Altitude = altitudeNode == null ? null : double.Parse(altitudeNode.Value),
-            HeartRate = heartRateValueNode == null ? null :  int.Parse(heartRateValueNode.Value),
+            HeartRate = heartRateValueNode == null ? null : int.Parse(heartRateValueNode.Value),
             SegmentNumber = segmentNumber
         };
     }
@@ -142,30 +124,5 @@ public partial class TrainingCenterFile : IActivityContainer
             Latitude = double.Parse(positionNode.Elements().FirstByLocalName(LatitudeDegreesNode).Value),
             Longitude = double.Parse(positionNode.Elements().FirstByLocalName(LongitudeDegreesNode).Value)
         };
-    }
-
-    private async Task<string> GetXmlStringAsync()
-    {
-        string xmlString = null;
-
-        using (var stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
-        {
-            using (TextReader reader = new StreamReader(stream))
-            {
-                xmlString = await reader.ReadToEndAsync();
-                xmlString = xmlString.Trim();
-
-                reader.Close();
-            }
-
-            stream.Close();
-        }
-
-        return xmlString;
-    }
-
-    private DateTime ParseUniversalTime(string value)
-    {
-        return DateTime.Parse(value).ToUniversalTime();
     }
 }

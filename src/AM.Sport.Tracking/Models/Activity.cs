@@ -21,6 +21,11 @@ public class Activity
     public string Type { get; set; }
 
     /// <summary>
+    /// Gets or sets activity name.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
     /// Gets or sets information about activity trackpoints.
     /// </summary>
     public List<TrackPoint> Track { get; set; }

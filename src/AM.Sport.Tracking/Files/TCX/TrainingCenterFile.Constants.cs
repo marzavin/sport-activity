@@ -2,7 +2,6 @@
 
 public partial class TrainingCenterFile
 {
-    private const string TrainingCenterDatabaseNode = "TrainingCenterDatabase";
     private const string ActivitiesNode = "Activities";
     private const string ActivityNode = "Activity";
     private const string IdNode = "Id";
