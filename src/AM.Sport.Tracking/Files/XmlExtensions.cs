@@ -51,6 +51,17 @@ internal static class XmlExtensions
         return attributes.FirstOrDefault(x => FilterByLocalName(x, name));
     }
 
+    /// <summary>
+    /// Searches for the first <see cref="XAttribute"/> with specified local name.
+    /// </summary>
+    /// <param name="attributes">Source <see cref="IEnumerable{XAttribute}"/>.</param>
+    /// <param name="name">Local name of <see cref="XAttribute"/>.</param>
+    /// <returns>First found <see cref="XAttribute"/>.</returns>
+    public static XAttribute FirstByLocalName(this IEnumerable<XAttribute> attributes, string name)
+    {
+        return attributes.FirstOrDefault(x => FilterByLocalName(x, name));
+    }
+
     private static bool FilterByLocalName(XElement element, string name)
     {
         return string.Equals(element.Name.LocalName, name, StringComparison.InvariantCultureIgnoreCase);

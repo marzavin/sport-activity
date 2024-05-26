@@ -6,7 +6,7 @@ namespace AM.Sport.Tracking.Tests.Files.TCX;
 [TestFixture]
 public class TrainingCenterFileTests
 {
-    [TestCase("Data\\21_Poznan_Marathon.tcx")]
+    [TestCase("Data\\strava_21_Poznan_Marathon.tcx")]
     public async Task LoadFileTest(string path)
     {
         var fullPath = Path.Combine(Environment.CurrentDirectory, path);
@@ -25,7 +25,14 @@ public class TrainingCenterFileTests
 
         var trackDistance = TrackCalculator.CalculateTrackDistance(track);
 
+        Assert.That(activity.TimeStamp.Kind, Is.EqualTo(DateTimeKind.Utc));
+
         Assert.That(activity.Segments.Count, Is.EqualTo(9));
+        foreach (var segment in activity.Segments)
+        {
+            Assert.That(segment.StartTime.Kind, Is.EqualTo(DateTimeKind.Utc));
+        }
+    
         Assert.That(activity.Author, Is.Not.Empty);
     }
 }

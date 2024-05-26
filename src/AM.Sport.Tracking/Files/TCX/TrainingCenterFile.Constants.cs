@@ -24,4 +24,5 @@ public partial class TrainingCenterFile
     private const string MaximumSpeedNode = "MaximumSpeed";
 
     private const string SportAttribute = "Sport";
+    private const string StartTimeAttribute = "StartTime";
 }

@@ -6,9 +6,14 @@
 public class Activity
 {
     /// <summary>
-    /// Gets or sets activity id;
+    /// Gets or sets source identifier.
     /// </summary>
-    public string ActivityId { get; set; }
+    public Guid SourceId { get; set; }
+
+    /// <summary>
+    /// Gets or sets timestamp of activity.
+    /// </summary>
+    public DateTime TimeStamp { get; set; }
 
     /// <summary>
     /// Gets or sets activity type.
@@ -16,7 +21,7 @@ public class Activity
     public string Type { get; set; }
 
     /// <summary>
-    /// Gets or sets list of <see cref="TrackPoint"/> of the activity track.
+    /// Gets or sets information about activity trackpoints.
     /// </summary>
     public List<TrackPoint> Track { get; set; }
 

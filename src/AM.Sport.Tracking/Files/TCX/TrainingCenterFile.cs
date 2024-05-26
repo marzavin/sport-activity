@@ -34,6 +34,8 @@ public partial class TrainingCenterFile : IActivityContainer
     /// <returns><see cref="Activity"/> for more information.</returns>
     public async Task<List<Activity>> LoadAsync()
     {
+        var sourceId = Guid.NewGuid();
+
         var activities = new List<Activity>();
 
         try
@@ -52,7 +54,8 @@ public partial class TrainingCenterFile : IActivityContainer
             {
                 var activity = new Activity
                 {
-                    ActivityId = activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value,
+                    SourceId = sourceId,
+                    TimeStamp = ParseUniversalTime(activityNode.Elements().FirstOrDefaultByLocalName(IdNode)?.Value),
                     Author = author,
                     Type = activityNode.Attributes().FirstOrDefaultByLocalName(SportAttribute)?.Value
                 };
@@ -62,16 +65,18 @@ public partial class TrainingCenterFile : IActivityContainer
 
                 for (var i = 0; i < laps.Count; i++)
                 {
-                    var maxSpeedValue = laps[i].Elements()?.FirstOrDefaultByLocalName(MaximumSpeedNode)?.Value;
-                    var distanceValue = laps[i].Elements()?.FirstOrDefaultByLocalName(DistanceMetersNode)?.Value;
-                    var totalTimeValue = laps[i].Elements()?.FirstOrDefaultByLocalName(TotalTimeSecondsNode)?.Value;
+                    var startTime = laps[i].Attributes().FirstByLocalName(StartTimeAttribute)?.Value;
+                    var distanceValue = laps[i].Elements().FirstByLocalName(DistanceMetersNode).Value;
+                    var totalTimeValue = laps[i].Elements().FirstByLocalName(TotalTimeSecondsNode).Value;
+                    var maxSpeedValue = laps[i].Elements().FirstOrDefaultByLocalName(MaximumSpeedNode)?.Value;
 
                     var segment = new Segment
                     {
                         Number = i + 1,
-                        MaxSpeed = string.IsNullOrWhiteSpace(maxSpeedValue) ? null : double.Parse(maxSpeedValue),
-                        Distance = string.IsNullOrWhiteSpace(distanceValue) ? null : double.Parse(distanceValue),
-                        TotalTime = string.IsNullOrWhiteSpace(totalTimeValue) ? null : TimeSpan.FromSeconds(double.Parse(totalTimeValue))
+                        StartTime = ParseUniversalTime(startTime),
+                        Distance = double.Parse(distanceValue),
+                        TotalTime = TimeSpan.FromSeconds(double.Parse(totalTimeValue)),
+                        MaxSpeed = string.IsNullOrWhiteSpace(maxSpeedValue) ? null : double.Parse(maxSpeedValue)
                     };
 
                     activity.Segments ??= [];
@@ -157,5 +162,10 @@ public partial class TrainingCenterFile : IActivityContainer
         }
 
         return xmlString;
+    }
+
+    private DateTime ParseUniversalTime(string value)
+    {
+        return DateTime.Parse(value).ToUniversalTime();
     }
 }
