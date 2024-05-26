@@ -11,14 +11,19 @@ public class Segment
     public int Number { get; set; }
 
     /// <summary>
+    /// Gets or sets start time of the segment.
+    /// </summary>
+    public DateTime StartTime { get; set; }
+
+    /// <summary>
     /// Gets or sets total time of the segment.
     /// </summary>
-    public TimeSpan? TotalTime { get; set; }
+    public TimeSpan TotalTime { get; set; }
 
     /// <summary>
     /// Gets or sets distance of the segment.
     /// </summary>
-    public double? Distance { get; set; }
+    public double Distance { get; set; }
 
     /// <summary>
     /// Gets or sets maximum speed shown on the segment.

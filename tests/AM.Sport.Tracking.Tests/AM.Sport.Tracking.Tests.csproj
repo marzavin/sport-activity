@@ -9,19 +9,26 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Data\21_Poznan_Marathon.gpx" />
-	  <None Remove="Data\21_Poznan_Marathon.tcx" />
-	  <None Remove="Data\21_Poznan_Marathon.xml" />
+	  <None Remove="Data\gpx_21_Poznan_Marathon.xml" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Data\21_Poznan_Marathon.xml">
+	  <Content Include="Data\gpx_21_Poznan_Marathon.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Data\21_Poznan_Marathon.gpx">
+	  <Content Include="Data\tcx_21_Poznan_Marathon.xml">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
-	  <Content Include="Data\21_Poznan_Marathon.tcx">
+	  <Content Include="Data\polar_flow_21_Poznan_Marathon.gpx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\polar_flow_21_Poznan_Marathon.tcx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\strava_21_Poznan_Marathon.gpx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Data\strava_21_Poznan_Marathon.tcx">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
